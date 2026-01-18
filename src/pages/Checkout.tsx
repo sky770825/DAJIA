@@ -51,11 +51,76 @@ const CheckoutPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate form
-    if (!formData.name || !formData.phone || !formData.email || !formData.address) {
+    // Validate cart is not empty
+    if (cartItems.length === 0) {
       toast({
-        title: '請填寫完整資訊',
-        description: '請確認所有必填欄位都已填寫',
+        title: '購物車是空的',
+        description: '請先將商品加入購物車',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate form fields
+    if (!formData.name?.trim()) {
+      toast({
+        title: '請填寫姓名',
+        description: '姓名為必填欄位',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.phone?.trim()) {
+      toast({
+        title: '請填寫電話',
+        description: '電話為必填欄位',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate phone format (Taiwan mobile: 09XX-XXX-XXX or 09XXXXXXXX)
+    const phoneRegex = /^09\d{2}-?\d{3}-?\d{3}$/;
+    if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      toast({
+        title: '電話格式錯誤',
+        description: '請輸入正確的手機號碼格式（例如：0912-345-678）',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email?.trim()) {
+      toast({
+        title: '請填寫電子郵件',
+        description: '電子郵件為必填欄位',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: '電子郵件格式錯誤',
+        description: '請輸入正確的電子郵件格式',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.address?.trim()) {
+      toast({
+        title: '請填寫地址',
+        description: '地址為必填欄位',
         variant: 'destructive',
       });
       setIsSubmitting(false);

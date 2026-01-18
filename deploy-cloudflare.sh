@@ -28,13 +28,25 @@ if ! command -v wrangler &> /dev/null; then
 fi
 
 # 检查是否已登录
-if ! wrangler whoami &> /dev/null; then
-    echo -e "${YELLOW}⚠ 未检测到 Cloudflare 登录，正在登录...${NC}"
-    echo -e "${BLUE}请按照提示完成登录${NC}"
+echo -e "${BLUE}检查 Cloudflare 登录状态...${NC}"
+if wrangler whoami &> /dev/null; then
+    echo -e "${GREEN}✓ 已登录 Cloudflare${NC}"
+    wrangler whoami
+else
+    echo -e "${YELLOW}⚠ 未检测到 Cloudflare 登录${NC}"
+    echo -e "${BLUE}正在启动登录流程...${NC}"
+    echo -e "${YELLOW}请按照浏览器提示完成登录${NC}"
+    echo ""
     wrangler login
+    echo ""
+    # 验证登录
+    if wrangler whoami &> /dev/null; then
+        echo -e "${GREEN}✓ 登录成功${NC}"
+    else
+        echo -e "${RED}✗ 登录失败，请重试${NC}"
+        exit 1
+    fi
 fi
-
-echo -e "${GREEN}✓ wrangler 已就绪${NC}"
 echo ""
 
 # 构建项目

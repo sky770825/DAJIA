@@ -65,7 +65,10 @@ export function Header() {
             <Link to="/cart">
               <ShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
-                <Badge className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs">
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -right-1 -top-1 z-10 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-bold shadow-lg"
+                >
                   {cartItemCount > 99 ? '99+' : cartItemCount}
                 </Badge>
               )}

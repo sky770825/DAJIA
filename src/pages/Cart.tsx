@@ -174,7 +174,15 @@ const CartPage = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  )) : (
+                    <div className="rounded-xl border border-border bg-card p-12 text-center">
+                      <ShoppingCart className="mx-auto h-12 w-12 text-muted-foreground" />
+                      <p className="mt-4 text-muted-foreground">購物車中沒有商品</p>
+                      <Button asChild className="mt-4">
+                        <Link to="/products">前往選購</Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
