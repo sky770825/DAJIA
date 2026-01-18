@@ -96,12 +96,13 @@ const VerifyPage = () => {
           setStatus('fail');
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('验证失败:', error);
       setStatus('fail');
+      const errorMessage = error instanceof Error ? error.message : '無法連接到驗證服務，請稍後再試';
       toast({
         title: '驗證失敗',
-        description: error.message || '無法連接到驗證服務，請稍後再試',
+        description: errorMessage,
         variant: 'destructive',
       });
     }

@@ -112,9 +112,10 @@ export function LeadForm({ preselectedProduct, className }: LeadFormProps) {
       setIsSuccess(true);
     } catch (error: unknown) {
       console.error('提交失败:', error);
+      const errorMessage = error instanceof Error ? error.message : '無法提交資料，請稍後再試';
       toast({
         title: '提交失敗',
-        description: error.message || '無法提交資料，請稍後再試',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

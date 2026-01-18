@@ -114,7 +114,7 @@ const CheckoutPage = () => {
             // 验证码生成失败不影响订单创建
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('保存订单失败:', error);
         // 即使数据库保存失败，也继续保存到 localStorage
       }

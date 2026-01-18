@@ -148,9 +148,10 @@ export const saveMediaRecord = async (options: MediaUploadOptions): Promise<Medi
     }
 
     return data as MediaRecord;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('保存媒體記錄失敗:', error);
-    throw new Error(`保存失敗: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : '保存失敗';
+    throw new Error(`保存失敗: ${errorMessage}`);
   }
 };
 

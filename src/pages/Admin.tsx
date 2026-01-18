@@ -106,11 +106,12 @@ const AdminPage = () => {
 
       if (error) throw error;
       setLeads(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('加载数据失败:', error);
+      const errorMessage = error instanceof Error ? error.message : '无法连接到数据库';
       toast({
         title: '加载失败',
-        description: error.message || '无法连接到数据库',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -226,11 +227,12 @@ const AdminPage = () => {
       setGenerateProductName('');
       setGenerateCount(10);
       loadVerificationCodes();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('生成验证码失败:', error);
+      const errorMessage = error instanceof Error ? error.message : '無法生成驗證碼';
       toast({
         title: '生成失败',
-        description: error.message || '無法生成驗證碼',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
