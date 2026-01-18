@@ -88,7 +88,7 @@ const CartPage = () => {
               {/* Items List */}
               <div className="lg:col-span-2">
                 <div className="space-y-4">
-                  {cartItems.map((item) => (
+                  {cartItems.length > 0 ? cartItems.map((item) => (
                     <div
                       key={item.product.id}
                       className="flex gap-4 rounded-xl border border-border bg-card p-4 md:p-6"
@@ -103,6 +103,11 @@ const CartPage = () => {
                           alt={item.product.name}
                           className="h-full w-full object-cover"
                         />
+                        {!item.product.inStock && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+                            <Badge variant="destructive" className="text-xs">缺貨中</Badge>
+                          </div>
+                        )}
                       </Link>
 
                       {/* Content */}
@@ -118,9 +123,18 @@ const CartPage = () => {
                             <p className="mt-1 text-sm text-muted-foreground">
                               {item.product.oneLiner}
                             </p>
-                            <p className="mt-2 text-lg font-bold text-foreground">
-                              NT$ {item.product.price.toLocaleString()}
-                            </p>
+                            <div className="mt-2 flex items-center gap-4">
+                              <p className="text-lg font-bold text-foreground">
+                                NT$ {item.product.price.toLocaleString()}
+                              </p>
+                              {item.product.inStock && item.product.stock > 0 && (
+                                <Badge variant="outline" className="text-xs">
+                                  {item.product.stock > 10 
+                                    ? `庫存：${item.product.stock} 件` 
+                                    : `僅剩 ${item.product.stock} 件`}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                           <Button
                             variant="ghost"
@@ -154,7 +168,7 @@ const CartPage = () => {
                                 size="sm"
                                 className="h-8 w-8 p-0"
                                 onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                                disabled={item.quantity >= item.product.stock}
+                                disabled={item.quantity >= item.product.stock || !item.product.inStock}
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
@@ -162,6 +176,11 @@ const CartPage = () => {
                             {item.quantity >= item.product.stock && (
                               <Badge variant="outline" className="text-xs">
                                 已達庫存上限
+                              </Badge>
+                            )}
+                            {!item.product.inStock && (
+                              <Badge variant="destructive" className="text-xs">
+                                已缺貨
                               </Badge>
                             )}
                           </div>

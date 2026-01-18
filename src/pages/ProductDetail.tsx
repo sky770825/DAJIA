@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, MessageCircle, QrCode, Shield, ShoppingCart, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, MessageCircle, QrCode, Shield, ShoppingCart, AlertCircle, Plus, Minus } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FloatingLineButton } from '@/components/FloatingLineButton';
@@ -21,6 +22,7 @@ const ProductDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const product = products.find((p) => p.slug === slug);
   const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
 
   if (!product) {
     return (
@@ -60,11 +62,39 @@ const ProductDetailPage = () => {
       return;
     }
 
-    addToCart(product, 1);
+    if (quantity > product.stock) {
+      toast({
+        title: '庫存不足',
+        description: `目前僅剩 ${product.stock} 件，請調整數量`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    addToCart(product, quantity);
     toast({
       title: '已加入購物車',
-      description: `${product.name} 已加入購物車`,
+      description: `${product.name} x ${quantity} 已加入購物車`,
     });
+    // 重置数量为1
+    setQuantity(1);
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity < 1) {
+      setQuantity(1);
+      return;
+    }
+    if (newQuantity > product.stock) {
+      setQuantity(product.stock);
+      toast({
+        title: '庫存上限',
+        description: `目前僅剩 ${product.stock} 件`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    setQuantity(newQuantity);
   };
 
   return (
@@ -169,8 +199,43 @@ const ProductDetailPage = () => {
                   ))}
                 </ul>
 
+                {/* Quantity Selector */}
+                <div className="mt-6">
+                  <label className="text-sm font-medium text-foreground mb-2 block">數量</label>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 rounded-lg border border-border">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-10 w-10 p-0"
+                        onClick={() => handleQuantityChange(quantity - 1)}
+                        disabled={quantity <= 1}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="w-16 text-center text-lg font-medium">
+                        {quantity}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-10 w-10 p-0"
+                        onClick={() => handleQuantityChange(quantity + 1)}
+                        disabled={quantity >= product.stock || !product.inStock}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {product.stock > 0 && (
+                      <span className="text-sm text-muted-foreground">
+                        庫存：{product.stock} 件
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 {/* CTAs */}
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                   <Button
                     size="lg"
                     onClick={handleAddToCart}
@@ -178,7 +243,7 @@ const ProductDetailPage = () => {
                     className="btn-gold text-primary-foreground"
                   >
                     <ShoppingCart className="mr-2 h-5 w-5" />
-                    加入購物車
+                    加入購物車 {quantity > 1 && `(${quantity} 件)`}
                   </Button>
                   <Button
                     size="lg"

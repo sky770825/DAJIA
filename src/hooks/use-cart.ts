@@ -9,15 +9,43 @@ export interface CartItem {
 const CART_STORAGE_KEY = 'dajia-mazu-cart';
 
 export function useCart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // Initialize state from localStorage immediately (during SSR-safe way)
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    // Only access localStorage on client side
+    if (typeof window === 'undefined') return [];
+    
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    if (stored) {
+      try {
+        const items = JSON.parse(stored);
+        // Validate that items is an array
+        if (Array.isArray(items)) {
+          return items;
+        }
+        return [];
+      } catch (error) {
+        console.error('Failed to load cart from localStorage', error);
+        return [];
+      }
+    }
+    return [];
+  });
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage on mount (as fallback)
   useEffect(() => {
     const stored = localStorage.getItem(CART_STORAGE_KEY);
     if (stored) {
       try {
         const items = JSON.parse(stored);
-        setCartItems(items);
+        if (Array.isArray(items)) {
+          // Only update if different (avoid unnecessary re-renders)
+          setCartItems((prev) => {
+            if (prev.length !== items.length) {
+              return items;
+            }
+            return prev;
+          });
+        }
       } catch (error) {
         console.error('Failed to load cart from localStorage', error);
       }
@@ -89,11 +117,23 @@ export function useCart() {
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+    if (!Array.isArray(cartItems) || cartItems.length === 0) return 0;
+    return cartItems.reduce((total, item) => {
+      if (item?.product?.price && item?.quantity) {
+        return total + item.product.price * item.quantity;
+      }
+      return total;
+    }, 0);
   };
 
   const getTotalItems = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
+    if (!Array.isArray(cartItems) || cartItems.length === 0) return 0;
+    return cartItems.reduce((total, item) => {
+      if (item?.quantity) {
+        return total + item.quantity;
+      }
+      return total;
+    }, 0);
   };
 
   return {

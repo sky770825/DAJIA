@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,18 @@ export function Header() {
   const location = useLocation();
   const { getTotalItems } = useCart();
   const cartItemCount = getTotalItems();
+  const [badgeAnimation, setBadgeAnimation] = useState(false);
+
+  // 当购物车数量变化时触发动画
+  useEffect(() => {
+    if (cartItemCount > 0) {
+      setBadgeAnimation(true);
+      const timer = setTimeout(() => {
+        setBadgeAnimation(false);
+      }, 600); // 动画持续时间 600ms
+      return () => clearTimeout(timer);
+    }
+  }, [cartItemCount]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -63,11 +75,14 @@ export function Header() {
             asChild
           >
             <Link to="/cart">
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-5 w-5 transition-transform duration-200 hover:scale-110" />
               {cartItemCount > 0 && (
                 <Badge 
                   variant="destructive" 
-                  className="absolute -right-1 -top-1 z-10 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-bold shadow-lg"
+                  className={cn(
+                    "absolute -right-1 -top-1 z-10 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-bold shadow-lg transition-all duration-200",
+                    badgeAnimation && "animate-cart-pop"
+                  )}
                 >
                   {cartItemCount > 99 ? '99+' : cartItemCount}
                 </Badge>
