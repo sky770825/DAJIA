@@ -331,7 +331,7 @@ const TestConnectionPage = () => {
                 <CardContent>
                   <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800 dark:text-blue-200">
                     <li>在 Supabase SQL Editor 中执行 <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">supabase_setup_categories.sql</code></li>
-                    <li>在 Supabase Dashboard > Storage 中创建 bucket: <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">product-images</code></li>
+                      <li>在 Supabase Dashboard &gt; Storage 中创建 bucket: <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">product-images</code></li>
                     <li>刷新此页面重新检查</li>
                   </ol>
                 </CardContent>
