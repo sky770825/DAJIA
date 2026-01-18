@@ -110,7 +110,7 @@ export function LeadForm({ preselectedProduct, className }: LeadFormProps) {
 
       setLeadId(generatedId);
       setIsSuccess(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('提交失败:', error);
       toast({
         title: '提交失敗',
